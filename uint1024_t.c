@@ -5,12 +5,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-// allocate memory for num
-
-// delete padding zeros
-
-// create test cases
-
 int max(int x, int y) {
     return x > y ? x : y;
 }
