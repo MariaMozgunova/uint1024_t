@@ -76,7 +76,7 @@ void delete_leading_zeros(uint1024_t * x) {
     }
 }
 
-uint1024_t uint1024_t_from_uint(unsigned int x) {
+uint1024_t from_uint(unsigned int x) {
     uint1024_t res;
 
     if (x == 0) {
@@ -117,7 +117,7 @@ void scanf_value(uint1024_t * x) {
     }
 }
 
-uint1024_t uint1024_t_add_op(uint1024_t x, uint1024_t y) {
+uint1024_t add_op(uint1024_t x, uint1024_t y) {
     uint1024_t res;
     res.filled = max(x.filled, y.filled);
     create(&res);
@@ -141,7 +141,7 @@ uint1024_t uint1024_t_add_op(uint1024_t x, uint1024_t y) {
     return res;
 }
 
-uint1024_t uint1024_t_subtr_op(uint1024_t x, uint1024_t y) {
+uint1024_t subtr_op(uint1024_t x, uint1024_t y) {
     uint1024_t res;
     res.filled = max(y.filled, x.filled);
     create(&res);
@@ -164,7 +164,7 @@ uint1024_t uint1024_t_subtr_op(uint1024_t x, uint1024_t y) {
     return res;    
 }
 
-uint1024_t uint1024_t_mult_op(uint1024_t x, uint1024_t y) {
+uint1024_t mult_op(uint1024_t x, uint1024_t y) {
     uint1024_t res;
 
     if (x.num[0] == 0 && x.filled == 1 || y.num[0] == 0 && y.filled == 1) {
@@ -203,27 +203,27 @@ int main(int argc, char* argv[]) {
     printf_value(x);
     printf("\n\n");
 
-    x = uint1024_t_from_uint(56547216);
-    y = uint1024_t_from_uint(75855);
+    x = from_uint(56547216);
+    y = from_uint(75855);
     printf_value(x);
     printf(" + ");
     printf_value(y);
     printf(" = ");
-    printf_value(uint1024_t_add_op(x, y));
+    printf_value(add_op(x, y));
     printf("\n");
     
     printf_value(x);
     printf(" - ");
     printf_value(y);
     printf(" = ");
-    printf_value(uint1024_t_subtr_op(x, y));
+    printf_value(subtr_op(x, y));
     printf("\n");
     
     printf_value(x);
     printf(" * ");
     printf_value(y);
     printf(" = ");
-    printf_value(uint1024_t_mult_op(x, y));
+    printf_value(mult_op(x, y));
 
     return 0;
 }
