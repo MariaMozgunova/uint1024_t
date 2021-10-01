@@ -125,8 +125,10 @@ uint1024_t add_op(uint1024_t x, uint1024_t y) {
 
     if (carry) {
         res.filled += 1;
-        if (res.filled % 2 == 0) {
+        
+        if (res.filled % 2) {
             realloc(res.num, size(res.filled));
+            res.num[res.filled / 2] = 0;
         }
 
         set(&res, res.filled - 1, carry);
@@ -218,6 +220,9 @@ int main(int argc, char* argv[]) {
     printf_value(y);
     printf(" = ");
     printf_value(mult_op(x, y));
+
+    free(x.num);
+    free(y.num);
 
     return 0;
 }
