@@ -20,16 +20,16 @@ struct uint1024_t_s {
 
 typedef struct uint1024_t_s uint1024_t;
 
-uint8_t read(uint1024_t x, uint8_t i) {
-    if (i >= x.filled) {
+uint8_t read(uint1024_t * x, uint8_t i) {
+    if (i >= x->filled) {
         return 0;
     }
 
     if (i % 2) {
-        return x.num[i / 2] & 0b1111;
+        return x->num[i / 2] & 0b1111;
     }
 
-    return x.num[i / 2] >> 4;
+    return x->num[i / 2] >> 4;
     
 }
 
@@ -48,7 +48,19 @@ uint8_t size(uint16_t filled) {
 }
 
 void create(uint1024_t * x) {
+    if (x->filled > 308) {
+        return;
+    }
+
     x->num = (uint8_t *)calloc(size(x->filled), sizeof(uint8_t));
+}
+
+void resize(uint1024_t * x) {
+    if (x->filled > 308) {
+        return;
+    }
+
+    realloc(x->num, size(x->filled));
 }
 
 void delete_leading_zeros(uint1024_t * x) {
@@ -61,12 +73,12 @@ void delete_leading_zeros(uint1024_t * x) {
 
     x->filled = size_x * 2;
 
-    if (read(*x, x->filled - 1) == 0) {
+    if (read(x, x->filled - 1) == 0) {
         x->filled--;
     }
 
     if (initial_size_x != size_x) {
-        realloc(x->num, size_x);
+        resize(x);
     }
 }
 
@@ -80,7 +92,7 @@ uint1024_t from_uint(unsigned int x) {
         return res;
     }
 
-    res.filled = floor(log10(x)) + 1;
+    res.filled = floor(log10(x)) + 1;  // find out the number of digits in x
     create(&res);
 
     for (int i = 0; i < res.filled; i++) {
@@ -94,12 +106,12 @@ uint1024_t from_uint(unsigned int x) {
 void printf_value(uint1024_t x) {
     for (int i = x.filled - 1; i >= 0; i--)
     {
-        printf("%" PRIu8 "", read(x, i));
+        printf("%" PRIu8 "", read(&x, i));
     }
 }
 
 void scanf_value(uint1024_t * x) {
-    char num[310];
+    char num[308];
     gets(num);
     int len = 0;
     x->filled = strlen(num);
@@ -118,7 +130,7 @@ uint1024_t add_op(uint1024_t x, uint1024_t y) {
 
     uint8_t carry = 0;
     for (int i = 0; i < res.filled; i++) {
-        uint8_t cur = read(x, i) + read(y, i) + carry;
+        uint8_t cur = read(&x, i) + read(&y, i) + carry;
         carry = cur / 10;
         set(&res, i, cur % 10);
     }
@@ -127,7 +139,7 @@ uint1024_t add_op(uint1024_t x, uint1024_t y) {
         res.filled += 1;
         
         if (res.filled % 2) {
-            realloc(res.num, size(res.filled));
+            resize(&res);
             res.num[res.filled / 2] = 0;
         }
 
@@ -143,9 +155,8 @@ uint1024_t subtr_op(uint1024_t x, uint1024_t y) {
     create(&res);
     uint8_t borrow = 0;
 
-    for (int i = 0; i < res.filled; i++)
-    {
-        int cur = read(x, i) - read(y, i) - borrow;
+    for (int i = 0; i < res.filled; i++) {
+        int cur = read(&x, i) - read(&y, i) - borrow;
         borrow = 0;
 
         if (cur < 0) {
@@ -178,7 +189,7 @@ uint1024_t mult_op(uint1024_t x, uint1024_t y) {
         carry = 0;
 
         for (int j = 0; j < y.filled; j++) {
-            carry = read(res, i + j) + carry + read(x, i) * read(y, j);
+            carry = read(&res, i + j) + carry + read(&x, i) * read(&y, j);
             set(&res, i + j, carry % 10);
             carry /= 10;
         }
@@ -199,8 +210,8 @@ int main(int argc, char* argv[]) {
     printf_value(x);
     printf("\n\n");
 
-    x = from_uint(56547216);
-    y = from_uint(75855);
+    x = from_uint(56547216);  // CHANGEME
+    y = from_uint(75855);  // CHANGEME
     printf_value(x);
     printf(" + ");
     printf_value(y);
