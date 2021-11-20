@@ -5,6 +5,10 @@
 #include <stdlib.h>
 #include <math.h>
 
+const int FIRST_FOUR_BITS = 0b1111;
+const int SECOND_FOUR_BITS = 0b11110000;
+const int MAX_LENGTH = 308;
+
 int max(int x, int y) {
     return x > y ? x : y;
 }
@@ -13,12 +17,10 @@ int min(int x, int y) {
     return x < y ? x : y;
 }
 
-struct uint1024_t_s {
+typedef struct uint1024_t {
     uint8_t * num; 
     int filled;
-};
-
-typedef struct uint1024_t_s uint1024_t;
+} uint1024_t;
 
 uint8_t read(uint1024_t * x, uint8_t i) {
     if (i >= x->filled) {
@@ -26,19 +28,18 @@ uint8_t read(uint1024_t * x, uint8_t i) {
     }
 
     if (i % 2) {
-        return x->num[i / 2] & 0b1111;
+        return x->num[i / 2] & FIRST_FOUR_BITS;
     }
 
-    return x->num[i / 2] >> 4;
-    
+    return x->num[i / 2] >> 4;    
 }
 
 void set(uint1024_t * x, uint8_t i, uint8_t val) {
     if (i % 2) {
-        x->num[i / 2] &= 0b11110000;
+        x->num[i / 2] &= SECOND_FOUR_BITS;
         x->num[i / 2] += val;
     } else {
-        x->num[i / 2] &= 0b1111;
+        x->num[i / 2] &= FIRST_FOUR_BITS;
         x->num[i / 2] += val << 4;
     }
 }
@@ -48,19 +49,27 @@ uint8_t size(uint16_t filled) {
 }
 
 void create(uint1024_t * x) {
-    if (x->filled > 308) {
+    if (x->filled > MAX_LENGTH) {
         return;
     }
-
+    
     x->num = (uint8_t *)calloc(size(x->filled), sizeof(uint8_t));
 }
 
 void resize(uint1024_t * x) {
-    if (x->filled > 308) {
+    if (x->filled > MAX_LENGTH) {
         return;
     }
 
     realloc(x->num, size(x->filled));
+}
+
+void num_to_str(uint1024_t * x, char str[]) {
+    for (int i = 0; i < x->filled; i++) {
+        str[x->filled - 1 - i] = read(x, i) + 48;
+    }
+
+    str[x->filled] = '\0';
 }
 
 void delete_leading_zeros(uint1024_t * x) {
@@ -103,15 +112,14 @@ uint1024_t from_uint(unsigned int x) {
     return res;
 }
 
-void printf_value(uint1024_t x) {
-    for (int i = x.filled - 1; i >= 0; i--)
-    {
-        printf("%" PRIu8 "", read(&x, i));
-    }
+void printf_value(uint1024_t * x) {
+    char str[309];
+    num_to_str(x, str);
+    printf(str);
 }
 
 void scanf_value(uint1024_t * x) {
-    char num[308];
+    char num[MAX_LENGTH];
     gets(num);
     int len = 0;
     x->filled = strlen(num);
@@ -123,14 +131,14 @@ void scanf_value(uint1024_t * x) {
     }
 }
 
-uint1024_t add_op(uint1024_t x, uint1024_t y) {
+uint1024_t add_op(uint1024_t * x, uint1024_t * y) {
     uint1024_t res;
-    res.filled = max(x.filled, y.filled);
+    res.filled = max(x->filled, y->filled);
     create(&res);
 
     uint8_t carry = 0;
     for (int i = 0; i < res.filled; i++) {
-        uint8_t cur = read(&x, i) + read(&y, i) + carry;
+        uint8_t cur = read(x, i) + read(y, i) + carry;
         carry = cur / 10;
         set(&res, i, cur % 10);
     }
@@ -149,14 +157,14 @@ uint1024_t add_op(uint1024_t x, uint1024_t y) {
     return res;
 }
 
-uint1024_t subtr_op(uint1024_t x, uint1024_t y) {
+uint1024_t subtr_op(uint1024_t * x, uint1024_t * y) {
     uint1024_t res;
-    res.filled = max(y.filled, x.filled);
+    res.filled = max(y->filled, x->filled);
     create(&res);
     uint8_t borrow = 0;
 
     for (int i = 0; i < res.filled; i++) {
-        int cur = read(&x, i) - read(&y, i) - borrow;
+        int cur = read(x, i) - read(y, i) - borrow;
         borrow = 0;
 
         if (cur < 0) {
@@ -166,74 +174,78 @@ uint1024_t subtr_op(uint1024_t x, uint1024_t y) {
 
         set(&res, i, cur);
     }
-    delete_leading_zeros(&res);
 
+    delete_leading_zeros(&res);
     return res;    
 }
 
-uint1024_t mult_op(uint1024_t x, uint1024_t y) {
+uint1024_t mult_op(uint1024_t * x, uint1024_t * y) {
     uint1024_t res;
 
-    if (x.num[0] == 0 && x.filled == 1 || y.num[0] == 0 && y.filled == 1) {
+    if (x->num[0] == 0 && x->filled == 1 || y->num[0] == 0 && y->filled == 1) {
         res.filled = 1;
         create(&res);
         
         return res;
     }
 
-    res.filled = x.filled + y.filled;
+    res.filled = x->filled + y->filled;
     create(&res);
     uint8_t carry;
 
-    for (int i = 0; i < x.filled; i++) {
+    for (int i = 0; i < x->filled; i++) {
         carry = 0;
 
-        for (int j = 0; j < y.filled; j++) {
-            carry = read(&res, i + j) + carry + read(&x, i) * read(&y, j);
+        for (int j = 0; j < y->filled; j++) {
+            carry = read(&res, i + j) + carry + read(x, i) * read(y, j);
             set(&res, i + j, carry % 10);
             carry /= 10;
         }
 
-        set(&res, i + y.filled, carry);
+        set(&res, i + y->filled, carry);
     }
-    delete_leading_zeros(&res);
 
+    delete_leading_zeros(&res);
     return res;
 }
 
-int main(int argc, char* argv[]) {
-    uint1024_t x;
-    uint1024_t y;
-    printf("Type in the uint1024_t number: ");
-    scanf_value(&x);
-    printf("Here is the number you typed in: ");
-    printf_value(x);
-    printf("\n\n");
+// int main(int argc, char* argv[]) {
+//     uint1024_t x;
+//     uint1024_t y;
+//     uint1024_t res;
+//     printf("Type in the uint1024_t number: ");
+//     scanf_value(&x);
+//     printf("Here is the number you typed in: ");
+//     printf_value(&x);
+//     printf("\n\n");
 
-    x = from_uint(56547216);  // CHANGEME
-    y = from_uint(75855);  // CHANGEME
-    printf_value(x);
-    printf(" + ");
-    printf_value(y);
-    printf(" = ");
-    printf_value(add_op(x, y));
-    printf("\n");
+//     x = from_uint(56547216);  // CHANGEME
+//     y = from_uint(75855);  // CHANGEME
+//     printf_value(&x);
+//     printf(" + ");
+//     printf_value(&y);
+//     printf(" = ");
+//     res = add_op(&x, &y);
+//     printf_value(&res);
+//     printf("\n");
     
-    printf_value(x);
-    printf(" - ");
-    printf_value(y);
-    printf(" = ");
-    printf_value(subtr_op(x, y));
-    printf("\n");
+//     printf_value(&x);
+//     printf(" - ");
+//     printf_value(&y);
+//     printf(" = ");
+//     free(res.num);
+//     res = subtr_op(&x, &y);
+//     printf_value(&res);
+//     printf("\n");
     
-    printf_value(x);
-    printf(" * ");
-    printf_value(y);
-    printf(" = ");
-    printf_value(mult_op(x, y));
+//     printf_value(&x);
+//     printf(" * ");
+//     printf_value(&y);
+//     printf(" = ");
+//     free(res.num);
+//     res = mult_op(&x, &y);
+//     printf_value(&res);
+//     printf("\n");
 
-    free(x.num);
-    free(y.num);
-
-    return 0;
-}
+//     return 0;
+// }
