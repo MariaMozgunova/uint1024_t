@@ -120,9 +120,9 @@ void printf_value(uint1024_t * x) {
 
 void scanf_value(uint1024_t * x) {
     char num[MAX_LENGTH];
-    gets(num);
+    fgets(num, MAX_LENGTH, stdin);
     int len = 0;
-    x->filled = strlen(num);
+    x->filled = strlen(num) - 1;
     free(x->num);
     create(x);
 
