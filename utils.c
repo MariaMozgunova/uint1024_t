@@ -4,7 +4,6 @@
 #include <inttypes.h>
 #include <stdlib.h>
 #include <math.h>
-
 #pragma once
 
 const int FIRST_FOUR_BITS = 0b1111;
