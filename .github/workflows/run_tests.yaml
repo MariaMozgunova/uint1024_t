@@ -31,7 +31,7 @@ jobs:
 
     - name: Make .exe file
       run: |
-        gcc uint1024_t.c -o uint1024_t.exe 
+        gcc uint1024_t.c -olm uint1024_t.exe 
 
     - name: ls
       run: |
