@@ -16,20 +16,14 @@ TEST(uint1024tTest, AddOpTest) {
     ASSERT_EQ(strcmp(str, "0"), 0) << "0 + 0 is not " << str;
 
     y = from_uint(245534091);
-    free(res.num);
     res = add_op(&x, &y);
     num_to_str(&res, str);
     ASSERT_EQ(strcmp(str, "245534091"), 0) << "0 + 245534091 is not " << str;
 
     x = from_uint(8936633);
-    free(res.num);
     res = add_op(&x, &y);
     num_to_str(&res, str);
     ASSERT_EQ(strcmp(str, "254470724"), 0) << "8936633 + 245534091 is not " << str;   
-
-    free(x.num); 
-    free(y.num); 
-    free(res.num); 
 }
 
 TEST(uint1024tTest, MultOpTest) {
@@ -41,26 +35,19 @@ TEST(uint1024tTest, MultOpTest) {
 
     x = from_uint(0);
     y = from_uint(0);
-    free(res.num);
     res = mult_op(&x, &y);
     num_to_str(&res, str);
     ASSERT_EQ(strcmp(str, "0"), 0) << "0 * 0 is not " << str;
 
     y = from_uint(245534091);
-    free(res.num);
     res = mult_op(&x, &y);
     num_to_str(&res, str);
     ASSERT_EQ(strcmp(str, "0"), 0) << "0 * 245534091 is not " << str;
 
     x = from_uint(8936633);
-    free(res.num);
     res = mult_op(&x, &y);
     num_to_str(&res, str);
     ASSERT_EQ(strcmp(str, "2194248060255603"), 0) << "8936633 * 245534091 is not " << str;    
-
-    free(x.num); 
-    free(y.num); 
-    free(res.num); 
 }
 
 TEST(uint1024tTest, SubtrOpTest) {
@@ -72,26 +59,19 @@ TEST(uint1024tTest, SubtrOpTest) {
 
     x = from_uint(0);
     y = from_uint(0);
-    free(res.num);
     res = subtr_op(&x, &y);
     num_to_str(&res, str);
     ASSERT_EQ(strcmp(str, "0"), 0) << "0 + 0 is not " << str;
 
     x = from_uint(245534091);
-    free(res.num);
     res = subtr_op(&x, &y);
     num_to_str(&res, str);
     ASSERT_EQ(strcmp(str, "245534091"), 0) << "245534091 - 0 is not " << str;
 
     y = from_uint(8936633);
-    free(res.num);
     res = subtr_op(&x, &y);
     num_to_str(&res, str);
     ASSERT_EQ(strcmp(str, "236597458"), 0) << "245534091 - 8936633 is not " << str;    
-
-    free(x.num); 
-    free(y.num); 
-    free(res.num); 
 }
 
 int main(int argc, char **argv) {
