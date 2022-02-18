@@ -3,13 +3,6 @@
 
 
 <!-- PROJECT SHIELDS -->
-<!--
-*** I'm using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
 [![MIT License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
@@ -40,7 +33,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-This is the implementation of uint1024_t which is a custom data type for [arbitrary-precision arithmetic](https://en.wikipedia.org/wiki/Arbitrary-precision_arithmetic). uint1024_t is stored as an array of uint8_t where two decimal digits stored in each array cell.
+This project is the implementation of uint1024_t, which is a custom data type for [arbitrary-precision arithmetic](https://en.wikipedia.org/wiki/Arbitrary-precision_arithmetic). The current implementation stores uint1024_t as an array of uint8_t. It puts two decimal digits in each array cell.
 
 The following functions are accessible:
 
@@ -48,8 +41,8 @@ The following functions are accessible:
 - **uint1024_t add_op(uint1024_t \*x, uint1024_t \*y)** - add two numbers x and y
 -  **uint1024_t subtr_op(uint1024_t \*x, uint1024_t \*y)** - subtruct y from x
 -  **uint1024_t mult_op(uint1024_t \*x, uint1024_t \*y)** - multiply x and y (implemented as the most straightforward algorithms used for multiplying numbers by hand (as taught in primary school))
--  **void printf_value(uint1024_t \*x)** - output value of x to std::cout
--  **void scanf_value(uint1024_t \*x)** - read value of x from std::cin
+-  **void printf_value(uint1024_t \*x)** - output value of x to standard output
+-  **void scanf_value(uint1024_t \*x)** - read value of x from standard input
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -59,12 +52,12 @@ The following functions are accessible:
 <!-- GETTING STARTED -->
 ## Getting Started
 
-To be able to use this uint1024_t implementation follow these simple example steps.
+To use this uint1024_t implementation, follow the simple steps below.
 
 ### Installation
 
 1. Clone the repo `git clone https://github.com/MariaMozgunova/uint1024_t.git`
-2. include uint1024_t implementation into your code `#include "uint1024_t/utils.c"`
+2. Include uint1024_t implementation into your code `#include "uint1024_t/utils.c"`
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
